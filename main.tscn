@@ -1,0 +1,68 @@
+[gd_scene load_steps=12 format=3 uid="uid://dcrf2os0b8j8t"]
+
+[ext_resource type="Texture2D" uid="uid://c8hynawpeaq8q" path="res://DaySkyHDRI057A_4K-HDR.exr" id="1_0xm2m"]
+[ext_resource type="Script" uid="uid://crhyavr8sxutu" path="res://Player.cs" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://cte2csdikf1i6" path="res://Camera.cs" id="3_lquwl"]
+[ext_resource type="Texture2D" uid="uid://crerntm0cqyxe" path="res://models/classic64/- Classic 64 Asset Pack 0.6/Ground/Materials/grass_02.png" id="4_lquwl"]
+[ext_resource type="PackedScene" uid="uid://b1w2g23acx0t0" path="res://models/classic64/- Classic 64 Asset Pack 0.6/Boxes/box_01.blend" id="5_lquwl"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_h2yge"]
+panorama = ExtResource("1_0xm2m")
+
+[sub_resource type="Sky" id="Sky_1bvp3"]
+sky_material = SubResource("PanoramaSkyMaterial_h2yge")
+
+[sub_resource type="Environment" id="Environment_lquwl"]
+background_mode = 2
+sky = SubResource("Sky_1bvp3")
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7mycd"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ig7tw"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_lquwl"]
+albedo_texture = ExtResource("4_lquwl")
+uv1_scale = Vector3(20, 20, 20)
+uv1_triplanar = true
+
+[node name="Main" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_lquwl")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 8.26168, 0)
+light_energy = 3.263
+light_volumetric_fog_energy = 0.515
+shadow_enabled = true
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.0719037, 7.47832, 0.0407186)
+floor_stop_on_slope = false
+floor_block_on_wall = false
+script = ExtResource("1_ig7tw")
+SprintSpeed = 13
+
+[node name="collision" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_7mycd")
+debug_color = Color(0.74902, 0, 0.101961, 1)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_ig7tw")
+
+[node name="Camera3D" type="Camera3D" parent="Player" node_paths=PackedStringArray("Player")]
+transform = Transform3D(1, 0, -9.93477e-08, 0, 1, 0, 9.93477e-08, 0, 1, 0, 1.49709, 0)
+script = ExtResource("3_lquwl")
+Player = NodePath("..")
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="."]
+transform = Transform3D(100, 0, 0, 0, 5, 0, 0, 0, 100, 0.799866, 0, 0.246017)
+use_collision = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGCombiner3D"]
+material = SubResource("ORMMaterial3D_lquwl")
+
+[node name="box_01" parent="." instance=ExtResource("5_lquwl")]
+transform = Transform3D(5.72, 0, 0, 0, 5.72, 0, 0, 0, 5.72, 16, 3.54607, -7)
