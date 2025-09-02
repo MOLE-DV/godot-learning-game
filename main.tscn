@@ -1,10 +1,12 @@
-[gd_scene load_steps=12 format=3 uid="uid://dcrf2os0b8j8t"]
+[gd_scene load_steps=14 format=3 uid="uid://dcrf2os0b8j8t"]
 
 [ext_resource type="Texture2D" uid="uid://c8hynawpeaq8q" path="res://DaySkyHDRI057A_4K-HDR.exr" id="1_0xm2m"]
 [ext_resource type="Script" uid="uid://crhyavr8sxutu" path="res://Player.cs" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://cte2csdikf1i6" path="res://Camera.cs" id="3_lquwl"]
 [ext_resource type="Texture2D" uid="uid://crerntm0cqyxe" path="res://models/classic64/- Classic 64 Asset Pack 0.6/Ground/Materials/grass_02.png" id="4_lquwl"]
 [ext_resource type="PackedScene" uid="uid://b1w2g23acx0t0" path="res://models/classic64/- Classic 64 Asset Pack 0.6/Boxes/box_01.blend" id="5_lquwl"]
+[ext_resource type="Texture2D" uid="uid://c4vlih4idyrvk" path="res://icons/1-bit_Pixel_Icons/Sprites_Cropped/Emoji_Hand_Fist_Cursor_Pan_Grab_Closed.png" id="6_7mycd"]
+[ext_resource type="Script" uid="uid://dms8pxu1clg1i" path="res://ShowGrab.cs" id="6_272bh"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_h2yge"]
 panorama = ExtResource("1_0xm2m")
@@ -18,12 +20,13 @@ sky = SubResource("Sky_1bvp3")
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7mycd"]
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_ig7tw"]
-
 [sub_resource type="ORMMaterial3D" id="ORMMaterial3D_lquwl"]
 albedo_texture = ExtResource("4_lquwl")
 uv1_scale = Vector3(20, 20, 20)
 uv1_triplanar = true
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_7mycd"]
+radius = 4.40319
 
 [node name="Main" type="Node3D"]
 
@@ -36,33 +39,58 @@ light_energy = 3.263
 light_volumetric_fog_energy = 0.515
 shadow_enabled = true
 
-[node name="Player" type="CharacterBody3D" parent="."]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.0719037, 7.47832, 0.0407186)
+[node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("Camera")]
+transform = Transform3D(-1.0635, 0, -9.29739e-08, 0, 1.0635, 0, 9.29739e-08, 0, -1.0635, 0.0719037, 2.5, -97.3523)
+collision_layer = 2
 floor_stop_on_slope = false
 floor_block_on_wall = false
 script = ExtResource("1_ig7tw")
-SprintSpeed = 13
+SprintSpeed = 15
+HeadBob_Amplitude = 0.5
+Camera = NodePath("Head/Camera3D")
 
-[node name="collision" type="CollisionShape3D" parent="Player"]
+[node name="Collision" type="CollisionShape3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_7mycd")
 debug_color = Color(0.74902, 0, 0.101961, 1)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = SubResource("CapsuleMesh_ig7tw")
+[node name="Head" type="Node3D" parent="Player"]
+transform = Transform3D(1, 0, 7.10543e-15, 0, 1, 0, -7.10543e-15, 0, 1, 0, 1.94726, 0)
 
-[node name="Camera3D" type="Camera3D" parent="Player" node_paths=PackedStringArray("Player")]
-transform = Transform3D(1, 0, -9.93477e-08, 0, 1, 0, 9.93477e-08, 0, 1, 0, 1.49709, 0)
+[node name="Camera3D" type="Camera3D" parent="Player/Head" node_paths=PackedStringArray("Player")]
+transform = Transform3D(0.940296, 0, -9.34162e-08, 0, 0.940296, 0, 9.34162e-08, 0, 0.940296, 0, 0, 0)
 script = ExtResource("3_lquwl")
-Player = NodePath("..")
+Player = NodePath("../..")
 
 [node name="CSGCombiner3D" type="CSGCombiner3D" parent="."]
 transform = Transform3D(100, 0, 0, 0, 5, 0, 0, 0, 100, 0.799866, 0, 0.246017)
 use_collision = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="CSGCombiner3D"]
+transform = Transform3D(3.27732, 0, 0, 0, 1, 0, 0, 0, 2.82162, 0, 0, 0)
 material = SubResource("ORMMaterial3D_lquwl")
 
-[node name="box_01" parent="." instance=ExtResource("5_lquwl")]
-transform = Transform3D(5.72, 0, 0, 0, 5.72, 0, 0, 0, 5.72, 16, 3.54607, -7)
+[node name="box_01" parent="." node_paths=PackedStringArray("Sprite") instance=ExtResource("5_lquwl")]
+transform = Transform3D(5.72, 0, 0, 0, 5.72, 0, 0, 0, 5.72, 0.333248, 3.54607, -94.4508)
+script = ExtResource("6_272bh")
+Sprite = NodePath("GrabSprite")
+
+[node name="GrabSprite" type="Sprite3D" parent="box_01"]
+transform = Transform3D(-1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0.000178274, 0.00357795, 0.000883102)
+visible = false
+billboard = 1
+double_sided = false
+no_depth_test = true
+texture = ExtResource("6_7mycd")
+
+[node name="Area3D" type="Area3D" parent="box_01"]
+transform = Transform3D(-0.185927, 0, -1.62542e-08, 0, 0.185927, 0, 1.62542e-08, 0, -0.185927, 0, 0, 0)
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="box_01/Area3D"]
+shape = SubResource("SphereShape3D_7mycd")
+debug_color = Color(0, 1, 0.282353, 0.419608)
+
+[connection signal="body_entered" from="box_01/Area3D" to="box_01" method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="box_01/Area3D" to="box_01" method="_on_area_3d_body_exited"]
